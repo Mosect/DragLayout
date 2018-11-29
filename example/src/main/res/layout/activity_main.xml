@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btn_drag"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_drag"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btn_flow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_flow"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btn_flow2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_flow2"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btn_drefresh"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_drefresh"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btn_vrefresh"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_vrefresh"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btn_hdli"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_hdli"
+            android:textAllCaps="false" />
+    </LinearLayout>
+</ScrollView>

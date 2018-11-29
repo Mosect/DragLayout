@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">DragLayout</string>
+    <string name="btn_drag">DragLayout</string>
+    <string name="btn_flow">FlowLayout 1</string>
+    <string name="btn_flow2">FlowLayout 2</string>
+    <string name="btn_drefresh">DragRefreshLayout</string>
+    <string name="btn_back">返回</string>
+    <string name="btn_vrefresh">VerticalRefreshLayout</string>
+    <string name="btn_hdli">水平滑动列表ITEM</string>
+    
+    <string name="top_none">不支持刷新</string>
+    <string name="top_normal">下拉刷新</string>
+    <string name="top_finish">刷新成功</string>
+    <string name="top_ready">释放立即刷新</string>
+    <string name="top_loading">正在刷新……</string>
+    
+    <string name="bottom_none">已经到底了</string>
+    <string name="bottom_normal">上拉加载更多</string>
+    <string name="bottom_finish">加载成功</string>
+    <string name="bottom_ready">释放立即加载</string>
+    <string name="bottom_loading">正在加载……</string>
+
+    <string name="title">标题</string>
+    <string name="info">使用了FlowLayout，左右滑动试试╮(╯▽╰)╭</string>
+</resources>

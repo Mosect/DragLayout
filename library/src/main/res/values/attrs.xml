@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="DragLayout">
+        <attr name="overScroll" format="flags">
+            <flag name="none" value="0" />
+            <flag name="left" value="1" />
+            <flag name="top" value="2" />
+            <flag name="right" value="4" />
+            <flag name="bottom" value="8" />
+            <flag name="all" value="15" />
+        </attr>
+        <attr name="scrollVelocity" format="dimension|reference" />
+    </declare-styleable>
+    <declare-styleable name="DragLayout_Layout">
+        <attr name="layout_layer" format="enum">
+            <enum name="none" value="0" />
+            <enum name="center" value="1" />
+            <enum name="left" value="2" />
+            <enum name="top" value="3" />
+            <enum name="right" value="4" />
+            <enum name="bottom" value="5" />
+        </attr>
+    </declare-styleable>
+</resources>
