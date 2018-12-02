@@ -29,12 +29,12 @@ Android拖拽布局，包括以下布局：
 项目已上传jcenter，可以直接使用maven或gradle引用本库。
 
 ## Maven
-<dependency>
-  <groupId>com.mosect</groupId>
-  <artifactId>DragLayout</artifactId>
-  <version>1.0.0</version>
-  <type>pom</type>
-</dependency>
+\<dependency\>\
+&nbsp;&nbsp;&nbsp;&nbsp;\<groupId\>com.mosect\</groupId\>\
+&nbsp;&nbsp;&nbsp;&nbsp;\<artifactId\>DragLayout\</artifactId\>\
+&nbsp;&nbsp;&nbsp;&nbsp;\<version\>1.0.0\</version\>\
+&nbsp;&nbsp;&nbsp;&nbsp;\<type\>pom\</type\>\
+\</dependency\>
 
 ## Gradle
 compile 'com.mosect:DragLayout:1.0.0'
