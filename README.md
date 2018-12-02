@@ -11,8 +11,11 @@ Android拖拽布局，包括以下布局：
 
 ## FlowLayout
 可折叠布局，优化四边的打开条件，可以实现类似商品详情或者列表ITEM左右拖拽菜单效果（需要改写RecyclerView或者ListView，具体使用方法请看Demo）。
+
 ![FlowLayout折叠样式1](img/FlowLayout1.gif)
+
 ![FlowLayout折叠样式2](img/FlowLayout2.gif)
+
 ![FlowLayout列表左右滑动菜单](img/FlowLayout3.gif)
 
 ## DragRefreshLayout
