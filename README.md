@@ -40,5 +40,5 @@ Android拖拽布局，包括以下布局：
 compile 'com.mosect:DragLayout:1.0.0'
 
 # 其他：
-个人网站：http://www.mosect.com:5207 建设中……
+个人网站：http://www.mosect.com:5207 建设中……\
 邮箱：zhouliuyang1995@163.com
