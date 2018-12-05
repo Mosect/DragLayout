@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">DragLayout</string>
+    <string name="empty">暂无数据</string>
+
     <string name="btn_drag">DragLayout</string>
     <string name="btn_flow">FlowLayout 1</string>
     <string name="btn_flow2">FlowLayout 2</string>
@@ -7,6 +9,8 @@
     <string name="btn_back">返回</string>
     <string name="btn_vrefresh">VerticalRefreshLayout</string>
     <string name="btn_hdli">水平滑动列表ITEM</string>
+    <string name="btn_pagerview">PagerView</string>
+    <string name="btn_pvinvp">PagerView in ViewPager</string>
     
     <string name="top_none">不支持刷新</string>
     <string name="top_normal">下拉刷新</string>

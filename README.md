@@ -32,12 +32,16 @@ Android拖拽布局，包括以下布局：
 \<dependency\>\
 &nbsp;&nbsp;&nbsp;&nbsp;\<groupId\>com.mosect\</groupId\>\
 &nbsp;&nbsp;&nbsp;&nbsp;\<artifactId\>DragLayout\</artifactId\>\
-&nbsp;&nbsp;&nbsp;&nbsp;\<version\>1.0.0\</version\>\
+&nbsp;&nbsp;&nbsp;&nbsp;\<version\>1.0.1\</version\>\
 &nbsp;&nbsp;&nbsp;&nbsp;\<type\>pom\</type\>\
 \</dependency\>
 
 ## Gradle
-compile 'com.mosect:DragLayout:1.0.0'
+compile 'com.mosect:DragLayout:1.0.1'
+
+# 修复记录：
+## 1.0.0
+1.修复DragLayout canScrollHorizontally方法返回不正确问题（此问题会让包含DragLayout的ViewPager不能左滑）
 
 # 其他：
 个人网站：http://www.mosect.com:5207 建设中……\

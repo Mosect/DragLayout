@@ -50,5 +50,19 @@
             android:layout_height="wrap_content"
             android:text="@string/btn_hdli"
             android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btn_pagerview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_pagerview"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btn_pvinvp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_pvinvp"
+            android:textAllCaps="false" />
     </LinearLayout>
 </ScrollView>

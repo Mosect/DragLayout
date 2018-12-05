@@ -26,11 +26,11 @@ public class ParentInterceptTouchHelper {
         switch (touchTool.getTouchType()) {
             case TouchTool.TOUCH_TYPE_HORIZONTAL: // 水平滑动
                 return !canChildrenScrollHorizontally(event, -touchTool.getHorizontalOrientation())
-                        && parent.canScrollHorizontally(-touchTool.getHorizontalOrientation());
+                        && canParentScrollHorizontally(parent, -touchTool.getHorizontalOrientation());
 
             case TouchTool.TOUCH_TYPE_VERTICAL: // 垂直滑动
-                return !canChildrenScrollVertically(event, -touchTool.getVerticalOrientation()) &&
-                        parent.canScrollVertically(-touchTool.getVerticalOrientation());
+                return !canChildrenScrollVertically(event, -touchTool.getVerticalOrientation())
+                        && canParentScrollVertically(parent, -touchTool.getVerticalOrientation());
 
             case TouchTool.TOUCH_TYPE_UNCERTAIN: // 未确定
             case TouchTool.TOUCH_TYPE_CLICK: // 点击事件
@@ -111,4 +111,25 @@ public class ParentInterceptTouchHelper {
         return child.canScrollHorizontally(direction);
     }
 
+    /**
+     * 判断父视图是否可以水平滑动
+     *
+     * @param parent    父视图
+     * @param direction 方向
+     * @return true，可以水平滑动
+     */
+    protected boolean canParentScrollHorizontally(ViewGroup parent, int direction) {
+        return parent.canScrollHorizontally(direction);
+    }
+
+    /**
+     * 判断父视图是否可以垂直滑动
+     *
+     * @param parent    父视图
+     * @param direction 方向
+     * @return true，可以水平滑动
+     */
+    protected boolean canParentScrollVertically(ViewGroup parent, int direction) {
+        return parent.canScrollVertically(direction);
+    }
 }

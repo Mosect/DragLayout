@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">DragLayout</string>
+    <string name="empty">EMPTY</string>
+
     <string name="btn_drag">DragLayout</string>
     <string name="btn_flow">FlowLayout 1</string>
     <string name="btn_flow2">FlowLayout 2</string>
@@ -8,6 +10,8 @@
     <string name="btn_back">BACK</string>
     <string name="btn_vrefresh">VerticalRefreshLayout</string>
     <string name="btn_hdli">Horizontal drag list item</string>
+    <string name="btn_pagerview">PagerView</string>
+    <string name="btn_pvinvp">PagerView in ViewPager</string>
 
     <string name="top_none">Unsupported refresh</string>
     <string name="top_normal">Pull to refresh</string>

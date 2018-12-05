@@ -25,5 +25,7 @@
         <activity android:name=".DragRefreshLayoutActivity" />
         <activity android:name=".VerticalRefreshLayoutActivity" />
         <activity android:name=".HorizontalDragListItemActivity" />
+        <activity android:name=".PagerViewActivity" />
+        <activity android:name=".PvInVpActivity" />
     </application>
 </manifest>

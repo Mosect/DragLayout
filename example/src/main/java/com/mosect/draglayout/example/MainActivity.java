@@ -51,6 +51,18 @@ public class MainActivity extends AppCompatActivity {
                 jumpActivity(HorizontalDragListItemActivity.class);
             }
         });
+        findViewById(R.id.btn_pagerview).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                jumpActivity(PagerViewActivity.class);
+            }
+        });
+        findViewById(R.id.btn_pvinvp).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                jumpActivity(PvInVpActivity.class);
+            }
+        });
     }
 
     private void jumpActivity(Class<? extends Activity> cls) {

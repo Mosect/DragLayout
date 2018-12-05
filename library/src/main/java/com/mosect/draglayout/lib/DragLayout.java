@@ -130,7 +130,6 @@ public class DragLayout extends FrameLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-//        System.out.println("onInterceptTouchEvent========================");
         velocityTracker.addMovement(event);
         touchTool.onTouchEvent(event);
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -521,7 +520,7 @@ public class DragLayout extends FrameLayout {
      */
     public void smoothLayerScrollTo(int x, int y) {
         if (touchTool.isTouching()) return; // 触摸滑动中，不支持滑动
-        new Throwable().printStackTrace();
+//        new Throwable().printStackTrace();
 
         int dx = x - getLayerScrollX();
         int dy = y - getLayerScrollY();
@@ -623,9 +622,9 @@ public class DragLayout extends FrameLayout {
         if (direction < 0) {
             return getLayerScrollX() > getHorizontalLayerScrollMin();
         } else if (direction > 0) {
-            return getLayerScrollX() < getVerticalLayerScrollMax();
+            return getLayerScrollX() < getHorizontalLayerScrollMax();
         }
-        return super.canScrollHorizontally(direction);
+        return false;
     }
 
     @Override
@@ -635,7 +634,7 @@ public class DragLayout extends FrameLayout {
         } else if (direction > 0) {
             return getLayerScrollY() < getVerticalLayerScrollMax();
         }
-        return super.canScrollVertically(direction);
+        return false;
     }
 
     @Override
@@ -690,11 +689,9 @@ public class DragLayout extends FrameLayout {
             if (child.getVisibility() == VISIBLE && child.isEnabled()) {
                 float x = event.getX();
                 float y = event.getY();
-//                System.out.println(String.format("x=%f,y=%f,l=%d,t=%d,r=%d,b=%d", x, y, child.getLeft(), child.getTop(), child.getRight(), child.getBottom()));
                 if (x >= child.getLeft() && x <= child.getRight() &&
                         y >= child.getTop() && y <= child.getBottom()) {
                     if (canChildScrollVertically(child, direction)) {
-//                        System.out.println("canChildScrollVertically:" + child);
                         return true;
                     }
                 }
