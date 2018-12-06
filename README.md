@@ -45,5 +45,5 @@ compile 'com.mosect:DragLayout:1.0.1'
 
 # 其他：
 个人网站：http://www.mosect.com:5207 建设中……\
-邮箱：zhouliuyang1995@163.com
+邮箱：zhouliuyang1995@163.com\
 QQ：905340954
