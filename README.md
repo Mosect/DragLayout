@@ -29,21 +29,36 @@ Android拖拽布局，包括以下布局：
 项目已上传jcenter，可以直接使用maven或gradle引用本库。
 
 ## Maven
-\<dependency\>\
-&nbsp;&nbsp;&nbsp;&nbsp;\<groupId\>com.mosect\</groupId\>\
-&nbsp;&nbsp;&nbsp;&nbsp;\<artifactId\>DragLayout\</artifactId\>\
-&nbsp;&nbsp;&nbsp;&nbsp;\<version\>1.0.1\</version\>\
-&nbsp;&nbsp;&nbsp;&nbsp;\<type\>pom\</type\>\
-\</dependency\>
+```
+<dependency>
+  <groupId>com.mosect</groupId>
+  <artifactId>DragLayout</artifactId>
+  <version>1.0.2</version>
+  <type>pom</type>
+</dependency>
+```
 
 ## Gradle
-compile 'com.mosect:DragLayout:1.0.1'
+```
+新版：
+implementation 'com.mosect:DragLayout:1.0.2'
+implementation 'com.mosect:ViewUtils:1.0.5'
 
-# 修复记录：
-## 1.0.0
-1.修复DragLayout canScrollHorizontally方法返回不正确问题（此问题会让包含DragLayout的ViewPager不能左滑）
+旧版：
+compile 'com.mosect:DragLayout:1.0.2'
+compile 'com.mosect:ViewUtils:1.0.5'
+```
+
+# 更新记录
+## 1.0.1
+* 修复DragLayout canScrollHorizontally方法返回不正确问题（此问题会让包含DragLayout的ViewPager不能左滑）
+## 1.0.2
+* 优化滑动
+* 移除ParentInterceptTouchHelper，改用ViewUtils库的InterceptTouchHelper
 
 # 其他：
-个人网站：http://www.mosect.com:5207 建设中……\
-邮箱：zhouliuyang1995@163.com\
+```
+个人网站：http://www.mosect.com:5207 建设中……
+邮箱：zhouliuyang1995@163.com
 QQ：905340954
+```
