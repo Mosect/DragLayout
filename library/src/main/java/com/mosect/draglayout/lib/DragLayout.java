@@ -15,6 +15,8 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.Scroller;
 
+import com.mosect.viewutils.GestureHelper;
+
 import java.util.LinkedList;
 
 public class DragLayout extends FrameLayout {
@@ -66,10 +68,13 @@ public class DragLayout extends FrameLayout {
 
     private Rect outRect = new Rect(); // 辅助Gravity计算Rect
     private Rect containerRect = new Rect(); // 辅助Gravity计算Rect
-    private TouchTool touchTool; // 触摸滑动辅助工具
+    private GestureHelper gestureHelper; // 触摸滑动辅助工具
     private VelocityTracker velocityTracker; // 速度辅助工具
     private int touchScrollStartX; // 开始触摸时滑动层的滑动位置X
     private int touchScrollStartY; // 开始触摸时滑动层的滑动位置Y
+    private float touchStartX;
+    private float touchStartY;
+    private boolean touching;
     private Scroller layerScroller; // 滑动层的滑动器
 
     private OnLayerScrollChangedListener onLayerScrollChangedListener;
@@ -108,7 +113,7 @@ public class DragLayout extends FrameLayout {
                     R.styleable.DragLayout_scrollVelocity, scrollVelocity);
             ta.recycle();
         }
-        touchTool = new TouchTool(getContext());
+        gestureHelper = GestureHelper.createDefault(getContext());
         layerScroller = new Scroller(getContext());
         velocityTracker = VelocityTracker.obtain();
     }
@@ -130,48 +135,41 @@ public class DragLayout extends FrameLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        velocityTracker.addMovement(event);
-        touchTool.onTouchEvent(event);
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            touchScrollStartX = getLayerScrollX();
-            touchScrollStartY = getLayerScrollY();
-            if (!layerScroller.isFinished()) {
-                layerScroller.abortAnimation(); // 停止滑动
-            }
-        }
-        switch (touchTool.getTouchType()) {
-            case TouchTool.TOUCH_TYPE_UNCERTAIN: // 未确定
-                if (event.getAction() == MotionEvent.ACTION_UP ||
-                        event.getAction() == MotionEvent.ACTION_CANCEL) {
-                    // 停止触摸
-                    releaseTouch();
-                }
-                return false;
-            case TouchTool.TOUCH_TYPE_CLICK: // 点击事件
-                if (event.getAction() == MotionEvent.ACTION_UP ||
-                        event.getAction() == MotionEvent.ACTION_CANCEL) {
-                    // 停止触摸
-                    releaseTouch();
-                }
-                return false;
-
-            case TouchTool.TOUCH_TYPE_HORIZONTAL: // 水平滑动
+        handleTouchEvent(event);
+        switch (gestureHelper.getGesture()) {
+            case GestureHelper.GESTURE_LEFT: // 左滑
                 if (getLayerScrollX() != 0) {
                     return true;
                 }
                 // 子View不可以滑动并且此View可以滑动
-                return !canChildrenScrollHorizontally(event, -touchTool.getHorizontalOrientation()) &&
-                        canLayerScrollHorizontally(-touchTool.getHorizontalOrientation());
+                return !canChildrenScrollHorizontally(event, 1) &&
+                        canLayerScrollHorizontally(1);
 
-            case TouchTool.TOUCH_TYPE_VERTICAL: // 垂直滑动
+            case GestureHelper.GESTURE_RIGHT: // 右滑
+                if (getLayerScrollX() != 0) {
+                    return true;
+                }
+                // 子View不可以滑动并且此View可以滑动
+                return !canChildrenScrollHorizontally(event, -1) &&
+                        canLayerScrollHorizontally(-1);
+
+            case GestureHelper.GESTURE_UP: // 上滑
                 if (getLayerScrollY() != 0) {
                     return true;
                 }
                 // 子View不可以滑动并且此View可以滑动
-                return !canChildrenScrollVertically(event, -touchTool.getVerticalOrientation()) &&
-                        canLayerScrollVertically(-touchTool.getVerticalOrientation());
+                return !canChildrenScrollVertically(event, 1) &&
+                        canLayerScrollVertically(1);
 
-            default: // 其他未知操作
+            case GestureHelper.GESTURE_DOWN:
+                if (getLayerScrollY() != 0) {
+                    return true;
+                }
+                // 子View不可以滑动并且此View可以滑动
+                return !canChildrenScrollVertically(event, -1) &&
+                        canLayerScrollVertically(-1);
+
+            default: // 其他操作
                 if (event.getAction() == MotionEvent.ACTION_UP ||
                         event.getAction() == MotionEvent.ACTION_CANCEL) {
                     // 停止触摸
@@ -188,24 +186,17 @@ public class DragLayout extends FrameLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            performClick();
+        }
+        handleTouchEvent(event);
+
         boolean resetTouch = false;
         boolean vertical = false;
         boolean horizontal = false;
-
-        touchTool.onTouchEvent(event);
-        velocityTracker.addMovement(event);
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            performClick();
-            // 记录开始触摸时滑动的位置
-            touchScrollStartX = getLayerScrollX();
-            touchScrollStartY = getLayerScrollY();
-            if (!layerScroller.isFinished()) {
-                layerScroller.abortAnimation(); // 停止滑动
-            }
-        }
-
-        switch (touchTool.getTouchType()) {
-            case TouchTool.TOUCH_TYPE_HORIZONTAL:  // 水平滑动
+        switch (gestureHelper.getGesture()) {
+            case GestureHelper.GESTURE_RIGHT:
+            case GestureHelper.GESTURE_LEFT:  // 水平滑动
                 if (getLayerScrollY() != 0) {
                     // 滑动层已在垂直方向滑动，不能受水平滑动而改变滑动层滑动方向
                     vertical = true;
@@ -214,7 +205,8 @@ public class DragLayout extends FrameLayout {
                 }
                 break; // case TouchTool.TOUCH_TYPE_HORIZONTAL
 
-            case TouchTool.TOUCH_TYPE_VERTICAL: // 垂直滑动
+            case GestureHelper.GESTURE_DOWN:
+            case GestureHelper.GESTURE_UP: // 垂直滑动
                 if (getLayerScrollX() != 0) {
                     // 滑动层已在水平方向滑动，不能受垂直滑动而改变滑动层滑动方向
                     horizontal = true;
@@ -233,7 +225,8 @@ public class DragLayout extends FrameLayout {
         }
 
         if (vertical) { // 垂直方向
-            int dy = (int) (touchScrollStartY - touchTool.getRangeY());
+            float rangeY = event.getY() - touchStartY;
+            int dy = (int) (touchScrollStartY - rangeY);
             if (!canVerticalScrollTo(dy)) { // 判断是否可以滑动到指定位置
                 resetTouch = true;
                 if (dy < 0) {
@@ -251,7 +244,7 @@ public class DragLayout extends FrameLayout {
                 // 触摸停止
                 if (getLayerScrollY() < 0) {
                     // 上方
-                    if (touchTool.getTouchOffsetY() > 0) {
+                    if (velocityTracker.getYVelocity() > 0) {
                         // 触摸向下滑动
                         if (canOpenTop(velocityTracker.getXVelocity(), velocityTracker.getYVelocity())) {
                             // 可以打开上方视图
@@ -266,7 +259,7 @@ public class DragLayout extends FrameLayout {
 
                 } else if (getLayerScrollY() > 0) {
                     // 下方
-                    if (touchTool.getTouchOffsetY() < 0) {
+                    if (velocityTracker.getYVelocity() < 0) {
                         // 触摸向上滑动
                         if (canOpenBottom(velocityTracker.getXVelocity(), velocityTracker.getYVelocity())) {
                             // 可以打开下方视图
@@ -284,7 +277,8 @@ public class DragLayout extends FrameLayout {
             }
 
         } else if (horizontal) { // 水平方向
-            int dx = (int) (touchScrollStartX - touchTool.getRangeX());
+            float rangeX = event.getX() - touchStartX;
+            int dx = (int) (touchScrollStartX - rangeX);
             if (!canHorizontalScrollTo(dx)) { // 判断是否可以滑动到指定位置
                 resetTouch = true;
                 if (dx < 0) {
@@ -302,7 +296,7 @@ public class DragLayout extends FrameLayout {
                 // 触摸停止
                 if (getLayerScrollX() < 0) {
                     // 左边
-                    if (touchTool.getTouchOffsetX() > 0) {
+                    if (velocityTracker.getXVelocity() > 0) {
                         // 触摸向右滑动
                         if (canOpenLeft(velocityTracker.getXVelocity(), velocityTracker.getYVelocity())) {
                             // 可以打开左边
@@ -318,7 +312,7 @@ public class DragLayout extends FrameLayout {
 
                 } else if (getLayerScrollX() > 0) {
                     // 右边
-                    if (touchTool.getTouchOffsetX() < 0) {
+                    if (velocityTracker.getXVelocity() < 0) {
                         // 触摸向左滑动
                         if (canOpenRight(velocityTracker.getXVelocity(), velocityTracker.getYVelocity())) {
                             // 可以打开右边
@@ -335,11 +329,31 @@ public class DragLayout extends FrameLayout {
         }
 
         if (resetTouch) {
-            touchTool.resetFirst(event);
-            touchScrollStartX = getLayerScrollX();
-            touchScrollStartY = getLayerScrollY();
+            resetTouchStart(event.getX(), event.getY());
         }
         return true;
+    }
+
+    private void handleTouchEvent(MotionEvent event) {
+        velocityTracker.addMovement(event);
+        gestureHelper.onTouchEvent(event);
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            touching = true;
+            resetTouchStart(event.getX(), event.getY());
+            if (!layerScroller.isFinished()) {
+                layerScroller.abortAnimation(); // 停止滑动
+            }
+        } else if (event.getAction() == MotionEvent.ACTION_UP ||
+                event.getAction() == MotionEvent.ACTION_CANCEL) {
+            touching = false;
+        }
+    }
+
+    private void resetTouchStart(float x, float y) {
+        touchScrollStartX = getLayerScrollX();
+        touchScrollStartY = getLayerScrollY();
+        touchStartX = x;
+        touchStartY = y;
     }
 
     @Override
@@ -519,8 +533,7 @@ public class DragLayout extends FrameLayout {
      * @param y 位置Y
      */
     public void smoothLayerScrollTo(int x, int y) {
-        if (touchTool.isTouching()) return; // 触摸滑动中，不支持滑动
-//        new Throwable().printStackTrace();
+        if (touching) return; // 触摸滑动中，不支持滑动
 
         int dx = x - getLayerScrollX();
         int dy = y - getLayerScrollY();

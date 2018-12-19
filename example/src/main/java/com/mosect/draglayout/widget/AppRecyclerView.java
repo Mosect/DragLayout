@@ -7,11 +7,11 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-import com.mosect.draglayout.lib.ParentInterceptTouchHelper;
+import com.mosect.viewutils.InterceptTouchHelper;
 
 public class AppRecyclerView extends RecyclerView {
 
-    private ParentInterceptTouchHelper interceptTouchHelper;
+    private InterceptTouchHelper interceptTouchHelper;
 
     public AppRecyclerView(@NonNull Context context) {
         super(context);
@@ -29,7 +29,7 @@ public class AppRecyclerView extends RecyclerView {
     }
 
     private void init() {
-        interceptTouchHelper = new ParentInterceptTouchHelper(this);
+        interceptTouchHelper = new InterceptTouchHelper(this);
     }
 
     @Override

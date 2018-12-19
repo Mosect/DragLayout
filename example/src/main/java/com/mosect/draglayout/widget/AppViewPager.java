@@ -7,11 +7,11 @@ import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-import com.mosect.draglayout.lib.ParentInterceptTouchHelper;
+import com.mosect.viewutils.InterceptTouchHelper;
 
 public class AppViewPager extends ViewPager {
 
-    private ParentInterceptTouchHelper interceptTouchHelper;
+    private InterceptTouchHelper interceptTouchHelper;
 
     public AppViewPager(@NonNull Context context) {
         super(context);
@@ -24,7 +24,7 @@ public class AppViewPager extends ViewPager {
     }
 
     private void init() {
-        interceptTouchHelper = new ParentInterceptTouchHelper(this);
+        interceptTouchHelper = new InterceptTouchHelper(this);
     }
 
     @Override
