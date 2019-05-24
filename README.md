@@ -40,13 +40,13 @@ Android拖拽布局，包括以下布局：
 
 ## Gradle
 ```
-新版：
+稳定版：
 implementation 'com.mosect:DragLayout:1.0.2'
 implementation 'com.mosect:ViewUtils:1.0.5'
 
-旧版：
-compile 'com.mosect:DragLayout:1.0.2'
-compile 'com.mosect:ViewUtils:1.0.5'
+测试版（谨慎更新）：
+implementation 'com.mosect:DragLayout:1.0.3-beta'
+implementation 'com.mosect:ViewUtils:1.0.5'
 ```
 
 # 更新记录
@@ -55,6 +55,11 @@ compile 'com.mosect:ViewUtils:1.0.5'
 ## 1.0.2
 * 优化滑动
 * 移除ParentInterceptTouchHelper，改用ViewUtils库的InterceptTouchHelper
+## 1.0.3-beta
+**此版本未测试版，请谨慎更新**
+* 修复上次滑动未完成，下次直接打开周边出现瞬间闪屏的问题
+* DragLayout直接继承ViewGroup，不继承FrameLayout
+* 性能优化
 
 # 其他：
 ```
