@@ -20,5 +20,6 @@
             <enum name="right" value="4" />
             <enum name="bottom" value="5" />
         </attr>
+        <attr name="android:layout_gravity" />
     </declare-styleable>
 </resources>

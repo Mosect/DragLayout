@@ -33,16 +33,6 @@ public class ListAdapter2 extends ListAdapter {
                 Toast.makeText(btnRight.getContext(), "点击了右边按钮", Toast.LENGTH_SHORT).show();
             }
         });
-
-        // 将right和btnRight的宽度设置成一样
-        dragLayout.postAfterLayout(new Runnable() {
-            @Override
-            public void run() {
-                ViewGroup.LayoutParams lp = right.getLayoutParams();
-                lp.width = btnRight.getWidth();
-                right.setLayoutParams(lp);
-            }
-        });
         return holder;
     }
 

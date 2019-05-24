@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ly_drag"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="70dp"
     android:background="#303030"
     app:overScroll="left">
 
@@ -17,13 +17,20 @@
         android:minHeight="0dp"
         android:paddingLeft="25dp"
         android:paddingRight="25dp"
+        android:stateListAnimator="@null"
         android:text="左边的按钮"
         android:textColor="#0080ff"
         app:layout_layer="left" />
 
+    <FrameLayout
+        android:id="@+id/ly_right"
+        android:layout_width="120dp"
+        android:layout_height="match_parent"
+        app:layout_layer="right" />
+
     <Button
         android:id="@+id/btn_right"
-        android:layout_width="wrap_content"
+        android:layout_width="120dp"
         android:layout_height="match_parent"
         android:layout_gravity="right"
         android:background="@android:color/transparent"
@@ -31,18 +38,13 @@
         android:minHeight="0dp"
         android:paddingLeft="25dp"
         android:paddingRight="25dp"
+        android:stateListAnimator="@null"
         android:text="右边的按钮"
         android:textColor="#0080ff" />
 
-    <FrameLayout
-        android:id="@+id/ly_right"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        app:layout_layer="right" />
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:background="#ffffff"
         android:clickable="true"
         android:focusable="true"

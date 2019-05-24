@@ -16,10 +16,11 @@ import android.widget.FrameLayout;
 import android.widget.Scroller;
 
 import com.mosect.viewutils.GestureHelper;
+import com.mosect.viewutils.MeasureUtils;
 
 import java.util.LinkedList;
 
-public class DragLayout extends FrameLayout {
+public class DragLayout extends ViewGroup {
 
     /**
      * 默认滑动速度，dip/秒
@@ -72,10 +73,11 @@ public class DragLayout extends FrameLayout {
     private VelocityTracker velocityTracker; // 速度辅助工具
     private int touchScrollStartX; // 开始触摸时滑动层的滑动位置X
     private int touchScrollStartY; // 开始触摸时滑动层的滑动位置Y
-    private float touchStartX;
-    private float touchStartY;
-    private boolean touching;
+    private float touchStartX; // 开始触摸滑动位置：X
+    private float touchStartY; // 开始触摸滑动位置：Y
+    private boolean touching; // 是否正在滑动中
     private Scroller layerScroller; // 滑动层的滑动器
+    private long viewInfoCode = 0; // 视图信息hash code，如果视图发生变化，此hashCode会发生改变
 
     private OnLayerScrollChangedListener onLayerScrollChangedListener;
     private CanOpenEdgeCallback canOpenEdgeCallback;
@@ -124,12 +126,12 @@ public class DragLayout extends FrameLayout {
     }
 
     @Override
-    protected FrameLayout.LayoutParams generateDefaultLayoutParams() {
+    protected LayoutParams generateDefaultLayoutParams() {
         return new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
     }
 
     @Override
-    public FrameLayout.LayoutParams generateLayoutParams(AttributeSet attrs) {
+    public LayoutParams generateLayoutParams(AttributeSet attrs) {
         return new LayoutParams(getContext(), attrs);
     }
 
@@ -358,8 +360,56 @@ public class DragLayout extends FrameLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        // 使用FrameLayout的方法测量子视图大小和本身大小
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        long code = computeInfoCode((long) widthMeasureSpec + heightMeasureSpec);
+        if (code == viewInfoCode) {
+            // 视图没有发生更改，不需要再次测量，直接使用旧的宽和高
+            setMeasuredDimension(getMeasuredWidth(), getMeasuredHeight());
+            return;
+        }
+        viewInfoCode = code;
+
+        // 获取内间距
+        int paddingWidth = getPaddingLeft() + getPaddingRight();
+        int paddingHeight = getPaddingTop() + getPaddingBottom();
+        // 制作自己的测量规格，用于约束子视图
+        int smsw = MeasureUtils.makeSelfMeasureSpec(widthMeasureSpec, paddingWidth);
+        int smsh = MeasureUtils.makeSelfMeasureSpec(heightMeasureSpec, paddingHeight);
+        // 内容的大小
+        int contentWidth = 0;
+        int contentHeight = 0;
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            if (child.getVisibility() == GONE) continue;
+
+            LayoutParams lp = (LayoutParams) child.getLayoutParams();
+            // 获取外边距
+            int marginWidth = lp.leftMargin + lp.rightMargin;
+            int marginHeight = lp.topMargin + lp.bottomMargin;
+            // 制作子视图的测量规格
+            int cmsw = MeasureUtils.makeChildMeasureSpec(smsw, lp.width, marginWidth);
+            int cmsh = MeasureUtils.makeChildMeasureSpec(smsh, lp.height, marginHeight);
+            // 测量子视图
+            child.measure(cmsw, cmsh);
+            // 子视图实际占用的大小（包括外边距）
+            int cw = marginWidth + child.getMeasuredWidth();
+            int ch = marginHeight + child.getMeasuredHeight();
+            // 选最大的作为内容大小
+            if (cw > contentWidth) {
+                contentWidth = cw;
+            }
+            if (ch > contentHeight) {
+                contentHeight = ch;
+            }
+        }
+        // 最后的内容大小应该加上内边距
+        contentWidth += paddingWidth;
+        contentHeight += paddingHeight;
+        // 获取当前内容大小对应的视图大小
+        int width = MeasureUtils.getMeasuredDimension(contentWidth, widthMeasureSpec);
+        int height = MeasureUtils.getMeasuredDimension(contentHeight, heightMeasureSpec);
+        // 设置视图大小
+        setMeasuredDimension(width, height);
+
         edgeSize.setEmpty(); // 清空边缘大小
         centerRect.left = getPaddingLeft();
         centerRect.top = getPaddingTop();
@@ -420,6 +470,7 @@ public class DragLayout extends FrameLayout {
      */
     protected void onLayoutChildren() {
         // 布局子View
+        System.out.println("onLayoutChildren==================");
         for (int i = 0; i < getChildCount(); i++) {
             View child = getChildAt(i);
             if (child.getVisibility() == GONE) continue;
@@ -427,7 +478,7 @@ public class DragLayout extends FrameLayout {
             LayoutParams lp = (LayoutParams) child.getLayoutParams();
             int gravity = lp.gravity;
             // 默认放在左上角
-            if (gravity == Gravity.NO_GRAVITY || gravity == LayoutParams.UNSPECIFIED_GRAVITY)
+            if (gravity == Gravity.NO_GRAVITY)
                 gravity = Gravity.LEFT | Gravity.TOP;
             // 计算子视图占用的空间
             int widthSpace = child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin;
@@ -469,8 +520,9 @@ public class DragLayout extends FrameLayout {
                     break;
             }
 
-            // 更具重力倾向，计算出视图位置
+            // 根据重力倾向，计算出视图位置
             Gravity.apply(gravity, widthSpace, heightSpace, containerRect, outRect);
+            System.out.println(String.format("Gravity.apply:%s,%s", containerRect, outRect));
             outRect.left += lp.leftMargin;
             outRect.top += lp.topMargin;
             outRect.right -= lp.rightMargin;
@@ -515,9 +567,7 @@ public class DragLayout extends FrameLayout {
         this.layerScrollY = y;
 //        System.out.println(String.format("layerScrollTo:x=%d,y=%d", x, y));
         // 重新布局
-        onLayoutChildren();
-
-        // 更改周边状态
+        requestLayout();
 
         // 触发对应方法
         onLayerScrollChanged(oldX, oldY, x, y);
@@ -654,6 +704,7 @@ public class DragLayout extends FrameLayout {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         System.out.println("DragLayout:onDetachedFromWindow");
+        viewInfoCode = 0;
         afterLayout = false;
         afterLayoutRunnableList = null;
     }
@@ -811,6 +862,36 @@ public class DragLayout extends FrameLayout {
     }
 
     /**
+     * 计算视图信息hash code
+     *
+     * @param offset 开始计算的偏移量
+     * @return hash code
+     */
+    protected long computeInfoCode(long offset) {
+        int count = getChildCount();
+        long result = offset;
+        int index = 0;
+        for (int i = 0; i < count; i++) {
+            View child = getChildAt(i);
+            result = computeHash(result, child.getVisibility(), index++);
+            LayoutParams lp = (LayoutParams) child.getLayoutParams();
+            result = computeHash(result, lp.layer, index++);
+            result = computeHash(result, lp.gravity, index++);
+            result = computeHash(result, lp.width, index++);
+            result = computeHash(result, lp.height, index++);
+            result = computeHash(result, lp.leftMargin, index++);
+            result = computeHash(result, lp.topMargin, index++);
+            result = computeHash(result, lp.rightMargin, index++);
+            result = computeHash(result, lp.bottomMargin, index++);
+        }
+        return result;
+    }
+
+    private long computeHash(long start, long value, long index) {
+        return start + (value << (index % 32));
+    }
+
+    /**
      * 获取左边大小
      *
      * @return 大小
@@ -964,6 +1045,9 @@ public class DragLayout extends FrameLayout {
                 if (smooth) {
                     smoothLayerScrollTo(getHorizontalLayerScrollMin(), 0);
                 } else {
+                    if (!layerScroller.isFinished()) {
+                        layerScroller.abortAnimation();
+                    }
                     layerScrollTo(getHorizontalLayerScrollMin(), 0);
                 }
             }
@@ -982,6 +1066,9 @@ public class DragLayout extends FrameLayout {
                 if (smooth) {
                     smoothLayerScrollTo(0, getVerticalLayerScrollMin());
                 } else {
+                    if (!layerScroller.isFinished()) {
+                        layerScroller.abortAnimation();
+                    }
                     layerScrollTo(0, getVerticalLayerScrollMin());
                 }
             }
@@ -1000,6 +1087,9 @@ public class DragLayout extends FrameLayout {
                 if (smooth) {
                     smoothLayerScrollTo(getHorizontalLayerScrollMax(), 0);
                 } else {
+                    if (!layerScroller.isFinished()) {
+                        layerScroller.abortAnimation();
+                    }
                     layerScrollTo(getHorizontalLayerScrollMax(), 0);
                 }
             }
@@ -1018,6 +1108,9 @@ public class DragLayout extends FrameLayout {
                 if (smooth) {
                     smoothLayerScrollTo(0, getVerticalLayerScrollMax());
                 } else {
+                    if (!layerScroller.isFinished()) {
+                        layerScroller.abortAnimation();
+                    }
                     layerScrollTo(0, getVerticalLayerScrollMax());
                 }
             }
@@ -1036,6 +1129,9 @@ public class DragLayout extends FrameLayout {
                 if (smooth) {
                     smoothLayerScrollTo(0, 0);
                 } else {
+                    if (!layerScroller.isFinished()) {
+                        layerScroller.abortAnimation();
+                    }
                     layerScrollTo(0, 0);
                 }
             }
@@ -1089,10 +1185,10 @@ public class DragLayout extends FrameLayout {
         this.maxScrollTime = maxScrollTime;
     }
 
-    public static class LayoutParams extends FrameLayout.LayoutParams {
+    public static class LayoutParams extends MarginLayoutParams {
 
         /**
-         * 层：无，表示放置在布局中间不滑动层
+         * 层：无，不受滑动影响，效果相当于将视图放在FrameLayout中
          */
         public static final int LAYER_NONE = 0;
         /**
@@ -1117,23 +1213,21 @@ public class DragLayout extends FrameLayout {
         public static final int LAYER_BOTTOM = 5;
 
         /**
-         * 层
+         * 表示视图位于的层
          */
         public int layer = LAYER_NONE;
+        public int gravity;
 
         public LayoutParams(Context c, AttributeSet attrs) {
             super(c, attrs);
             TypedArray ta = c.obtainStyledAttributes(attrs, R.styleable.DragLayout_Layout);
             this.layer = ta.getInt(R.styleable.DragLayout_Layout_layout_layer, LAYER_NONE);
+            this.gravity = ta.getInt(R.styleable.DragLayout_Layout_android_layout_gravity, Gravity.NO_GRAVITY);
             ta.recycle();
         }
 
         public LayoutParams(int width, int height) {
             super(width, height);
-        }
-
-        public LayoutParams(int width, int height, int gravity) {
-            super(width, height, gravity);
         }
 
         public LayoutParams(ViewGroup.LayoutParams source) {
