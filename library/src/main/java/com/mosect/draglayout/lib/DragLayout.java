@@ -12,6 +12,7 @@ import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.Scroller;
 
@@ -64,8 +65,8 @@ public class DragLayout extends ViewGroup {
      * 的速度，此速度默认为0，即关闭最大时间限制
      */
     private int maxScrollTime;
-    private boolean afterLayout;
     private LinkedList<Runnable> afterLayoutRunnableList;
+    private boolean attached = false; // 是否添加到窗口系统
 
     private Rect outRect = new Rect(); // 辅助Gravity计算Rect
     private Rect containerRect = new Rect(); // 辅助Gravity计算Rect
@@ -118,6 +119,16 @@ public class DragLayout extends ViewGroup {
         gestureHelper = GestureHelper.createDefault(getContext());
         layerScroller = new Scroller(getContext());
         velocityTracker = VelocityTracker.obtain();
+        getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (null != afterLayoutRunnableList && !afterLayoutRunnableList.isEmpty()) {
+                    while (afterLayoutRunnableList.size() > 0) {
+                        afterLayoutRunnableList.removeFirst().run();
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -374,6 +385,9 @@ public class DragLayout extends ViewGroup {
         // 制作自己的测量规格，用于约束子视图
         int smsw = MeasureUtils.makeSelfMeasureSpec(widthMeasureSpec, paddingWidth);
         int smsh = MeasureUtils.makeSelfMeasureSpec(heightMeasureSpec, paddingHeight);
+        // 制作自己的测量规格，不受padding影响，用于约束周边视图
+        int smswnp = MeasureUtils.makeSelfMeasureSpec(widthMeasureSpec, 0);
+        int smshnp = MeasureUtils.makeSelfMeasureSpec(heightMeasureSpec, 0);
         // 内容的大小
         int contentWidth = 0;
         int contentHeight = 0;
@@ -386,8 +400,20 @@ public class DragLayout extends ViewGroup {
             int marginWidth = lp.leftMargin + lp.rightMargin;
             int marginHeight = lp.topMargin + lp.bottomMargin;
             // 制作子视图的测量规格
-            int cmsw = MeasureUtils.makeChildMeasureSpec(smsw, lp.width, marginWidth);
-            int cmsh = MeasureUtils.makeChildMeasureSpec(smsh, lp.height, marginHeight);
+            int cmsw, cmsh;
+            switch (lp.layer) {
+                case LayoutParams.LAYER_LEFT:
+                case LayoutParams.LAYER_RIGHT:
+                case LayoutParams.LAYER_TOP:
+                case LayoutParams.LAYER_BOTTOM:
+                    cmsw = MeasureUtils.makeChildMeasureSpec(smswnp, lp.width, marginWidth);
+                    cmsh = MeasureUtils.makeChildMeasureSpec(smshnp, lp.height, marginHeight);
+                    break;
+                default:
+                    cmsw = MeasureUtils.makeChildMeasureSpec(smsw, lp.width, marginWidth);
+                    cmsh = MeasureUtils.makeChildMeasureSpec(smsh, lp.height, marginHeight);
+                    break;
+            }
             // 测量子视图
             child.measure(cmsw, cmsh);
             // 子视图实际占用的大小（包括外边距）
@@ -457,12 +483,6 @@ public class DragLayout extends ViewGroup {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         onLayoutChildren();
-        afterLayout = true;
-        if (null != afterLayoutRunnableList && !afterLayoutRunnableList.isEmpty()) {
-            while (afterLayoutRunnableList.size() > 0) {
-                afterLayoutRunnableList.removeFirst().run();
-            }
-        }
     }
 
     /**
@@ -566,7 +586,6 @@ public class DragLayout extends ViewGroup {
         this.layerScrollX = x;
         this.layerScrollY = y;
 //        System.out.println(String.format("layerScrollTo:x=%d,y=%d", x, y));
-        // 重新布局
         requestLayout();
 
         // 触发对应方法
@@ -701,11 +720,17 @@ public class DragLayout extends ViewGroup {
     }
 
     @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        attached = true;
+    }
+
+    @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         System.out.println("DragLayout:onDetachedFromWindow");
+        attached = false;
         viewInfoCode = 0;
-        afterLayout = false;
         afterLayoutRunnableList = null;
     }
 
@@ -1144,7 +1169,7 @@ public class DragLayout extends ViewGroup {
      * @param runnable 任务
      */
     public void postAfterLayout(Runnable runnable) {
-        if (afterLayout) {
+        if (attached && !isLayoutRequested()) {
             runnable.run();
         } else {
             if (null == afterLayoutRunnableList) {
