@@ -46,7 +46,6 @@ implementation 'com.mosect:ViewUtils:1.0.5'
 
 # 更新记录
 ## 1.0.3
-**此版为测试版，请谨慎更新**
 * 修复上次滑动未完成，下次直接打开周边出现瞬间闪屏的问题
 * DragLayout直接继承ViewGroup，不继承FrameLayout
 * 性能优化
