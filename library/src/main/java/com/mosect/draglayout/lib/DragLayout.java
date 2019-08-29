@@ -65,6 +65,10 @@ public class DragLayout extends ViewGroup {
      * 的速度，此速度默认为0，即关闭最大时间限制
      */
     private int maxScrollTime;
+    /**
+     * 是否开启触摸滑动，默认开启
+     */
+    private boolean touchScrollable;
     private LinkedList<Runnable> afterLayoutRunnableList;
     private boolean attached = false; // 是否添加到窗口系统
 
@@ -109,11 +113,14 @@ public class DragLayout extends ViewGroup {
     private void init(AttributeSet attrs) {
         scrollVelocity = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 DEFAULT_SCROLL_VELOCITY_DP, getContext().getResources().getDisplayMetrics());
+        touchScrollable = true;
         if (null != attrs) {
             TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.DragLayout);
             overScroll = ta.getInt(R.styleable.DragLayout_overScroll, OVER_SCROLL_ALL);
             scrollVelocity = ta.getDimensionPixelSize(
                     R.styleable.DragLayout_scrollVelocity, scrollVelocity);
+            maxScrollTime = ta.getInt(R.styleable.DragLayout_maxScrollTime, 0);
+            touchScrollable = ta.getBoolean(R.styleable.DragLayout_touchScrollable, touchScrollable);
             ta.recycle();
         }
         gestureHelper = GestureHelper.createDefault(getContext());
@@ -248,7 +255,9 @@ public class DragLayout extends ViewGroup {
                     dy = getVerticalLayerScrollMax();
                 }
             }
-            layerScrollTo(getLayerScrollX(), dy);
+            if (touchScrollable) {
+                layerScrollTo(getLayerScrollX(), dy);
+            }
 
             // 处理停止触摸情况
             if (event.getAction() == MotionEvent.ACTION_UP ||
@@ -300,7 +309,9 @@ public class DragLayout extends ViewGroup {
                     dx = getHorizontalLayerScrollMax();
                 }
             }
-            layerScrollTo(dx, getScrollY());
+            if (touchScrollable) {
+                layerScrollTo(dx, getScrollY());
+            }
 
             // 处理停止触摸情况
             if (event.getAction() == MotionEvent.ACTION_UP ||
@@ -490,7 +501,7 @@ public class DragLayout extends ViewGroup {
      */
     protected void onLayoutChildren() {
         // 布局子View
-        System.out.println("onLayoutChildren==================");
+        // System.out.println("onLayoutChildren==================");
         for (int i = 0; i < getChildCount(); i++) {
             View child = getChildAt(i);
             if (child.getVisibility() == GONE) continue;
@@ -542,7 +553,7 @@ public class DragLayout extends ViewGroup {
 
             // 根据重力倾向，计算出视图位置
             Gravity.apply(gravity, widthSpace, heightSpace, containerRect, outRect);
-            System.out.println(String.format("Gravity.apply:%s,%s", containerRect, outRect));
+            // System.out.println(String.format("Gravity.apply:%s,%s", containerRect, outRect));
             outRect.left += lp.leftMargin;
             outRect.top += lp.topMargin;
             outRect.right -= lp.rightMargin;
@@ -1202,12 +1213,45 @@ public class DragLayout extends ViewGroup {
         }
     }
 
+    /**
+     * 获取最大滑动时间
+     *
+     * @return 最大滑动时间
+     * @see #setMaxScrollTime(int)
+     */
     public int getMaxScrollTime() {
         return maxScrollTime;
     }
 
+    /**
+     * 设置最大的滑动时间：如果smooth到目标位置需要的时间大于此时间，则以maxScrollTime时间到达目标
+     * 的速度滑动；如果此值小于等于0，不生效
+     *
+     * @param maxScrollTime 最大滑动时间
+     * @see #getMaxScrollTime()
+     */
     public void setMaxScrollTime(int maxScrollTime) {
         this.maxScrollTime = maxScrollTime;
+    }
+
+    /**
+     * 设置是否触摸滑动
+     *
+     * @param touchScrollable 是否开启触摸滑动：true，触摸导致视图进行滑动；false，触摸不会导致视图滑动
+     * @see #isTouchScrollable()
+     */
+    public void setTouchScrollable(boolean touchScrollable) {
+        this.touchScrollable = touchScrollable;
+    }
+
+    /**
+     * 判断是否开启触摸滑动
+     *
+     * @return true，触摸导致视图进行滑动；false，触摸不会导致视图滑动；默认为true
+     * @see #setTouchScrollable(boolean)
+     */
+    public boolean isTouchScrollable() {
+        return touchScrollable;
     }
 
     public static class LayoutParams extends MarginLayoutParams {

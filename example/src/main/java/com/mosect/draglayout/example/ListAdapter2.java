@@ -40,6 +40,7 @@ public class ListAdapter2 extends ListAdapter {
     public void onBindViewHolder(@NonNull ItemHolder holder, int position) {
         super.onBindViewHolder(holder, position);
         DragLayout dragLayout = holder.itemView.findViewById(R.id.ly_drag);
+        dragLayout.setTouchScrollable(data.get(position).isTouchScrollable());
         dragLayout.closeEdge(false); // 关闭周边
     }
 }

@@ -6,6 +6,7 @@ public class ListItem implements Serializable, Cloneable {
 
     private String title;
     private String info;
+    private boolean touchScrollable; // 是否可以触摸滑动
 
     @Override
     public ListItem clone() {
@@ -30,5 +31,13 @@ public class ListItem implements Serializable, Cloneable {
 
     public void setInfo(String info) {
         this.info = info;
+    }
+
+    public boolean isTouchScrollable() {
+        return touchScrollable;
+    }
+
+    public void setTouchScrollable(boolean touchScrollable) {
+        this.touchScrollable = touchScrollable;
     }
 }

@@ -28,23 +28,15 @@ Android拖拽布局，包括以下布局：
 # 使用：
 项目已上传jcenter，可以直接使用maven或gradle引用本库。
 
-## Maven
-```
-<dependency>
-  <groupId>com.mosect</groupId>
-  <artifactId>DragLayout</artifactId>
-  <version>1.0.3</version>
-  <type>pom</type>
-</dependency>
-```
-
 ## Gradle
 ```
-implementation 'com.mosect:DragLayout:1.0.3'
-implementation 'com.mosect:ViewUtils:1.0.5'
+implementation 'com.mosect:DragLayout:1.0.4'
 ```
 
 # 更新记录
+## 1.0.4
+* 增加maxScrollTime（xml）
+* 增加touchScrollable属性，表示是否可以触摸滑动视图
 ## 1.0.3
 * 修复上次滑动未完成，下次直接打开周边出现瞬间闪屏的问题
 * DragLayout直接继承ViewGroup，不继承FrameLayout

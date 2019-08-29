@@ -33,6 +33,7 @@ public class HorizontalDragListItemActivity extends AppCompatActivity {
             ListItem item = new ListItem();
             item.setTitle(getString(R.string.title) + (i + 1));
             item.setInfo(getString(R.string.info));
+            item.setTouchScrollable(i % 2 == 0);
             items.add(item);
         }
         adapter2.addAll(items);

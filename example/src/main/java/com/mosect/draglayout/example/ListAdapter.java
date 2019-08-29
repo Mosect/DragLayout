@@ -19,7 +19,7 @@ import java.util.List;
 
 public class ListAdapter extends RecyclerView.Adapter<ItemHolder> {
 
-    private List<ListItem> data = new ArrayList<>();
+    protected List<ListItem> data = new ArrayList<>();
 
     @NonNull
     @Override

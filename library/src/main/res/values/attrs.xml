@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="DragLayout">
+        <!--是否可以滑动超过四周-->
         <attr name="overScroll" format="flags">
             <flag name="none" value="0" />
             <flag name="left" value="1" />
@@ -9,7 +10,12 @@
             <flag name="bottom" value="8" />
             <flag name="all" value="15" />
         </attr>
+        <!--滑动速度（smooth）-->
         <attr name="scrollVelocity" format="dimension|reference" />
+        <!--最大的滑动时间-->
+        <attr name="maxScrollTime" format="integer|reference" />
+        <!--是否开启触摸滑动-->
+        <attr name="touchScrollable" format="boolean|reference" />
     </declare-styleable>
     <declare-styleable name="DragLayout_Layout">
         <attr name="layout_layer" format="enum">
