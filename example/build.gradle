@@ -39,5 +39,5 @@ dependencies {
     implementation 'io.reactivex:rxjava:1.0.14'
     implementation 'io.reactivex:rxandroid:1.0.1'
     implementation project(':library')
-    implementation 'com.mosect:ViewUtils:1.0.5'
+    implementation 'com.github.Mosect:ViewUtils:1.0.8'
 }

@@ -29,8 +29,17 @@ Android拖拽布局，包括以下布局：
 项目已上传jcenter，可以直接使用maven或gradle引用本库。
 
 ## Gradle
+在项目根节点的build.gradle中配置：
 ```
-implementation 'com.mosect:DragLayout:1.0.4'
+allprojects {
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+在需要引入的项目build.gradle中添加
+```
+implementation 'com.github.Mosect:DragLayout:1.0.5'
 ```
 
 # 更新记录
