@@ -26,7 +26,7 @@ Android拖拽布局，包括以下布局：
 ![VerticalRefreshLayout，分页加载](img/VerticalRefreshLayout.gif)
 
 # 使用：
-项目已上传jcenter，可以直接使用maven或gradle引用本库。
+[![](https://jitpack.io/v/Mosect/DragLayout.svg)](https://jitpack.io/#Mosect/DragLayout)
 
 ## Gradle
 在项目根节点的build.gradle中配置：
@@ -43,6 +43,8 @@ implementation 'com.github.Mosect:DragLayout:1.0.5'
 ```
 
 # 更新记录
+## 1.0.5
+* jcenter更改为jitpack
 ## 1.0.4
 * 增加maxScrollTime（xml）
 * 增加touchScrollable属性，表示是否可以触摸滑动视图
@@ -61,5 +63,4 @@ implementation 'com.github.Mosect:DragLayout:1.0.5'
 ```
 个人网站：http://www.mosect.com 建设中……
 邮箱：zhouliuyang1995@163.com
-QQ：905340954
 ```
